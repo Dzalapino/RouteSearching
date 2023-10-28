@@ -5,8 +5,10 @@ cities_list : list[cities.City] = cities.generate_cities(5)
 for city in cities_list:
     print(city.x, city.y, city.z)
 
-cities_matrix = cities.generate_costs_matrix(cities_list, True)
-print(cities_matrix)
+costs_matrix = cities.generate_costs_matrix(cities_list, False)
+print(costs_matrix)
 
-cities.dicard_20percent_connections(cities_matrix)
-print(cities_matrix)
+cities.dicard_20percent_connections(costs_matrix)
+print(costs_matrix)
+
+cities.print_graph(costs_matrix, cities_list)
