@@ -44,7 +44,7 @@ def dicard_20percent_connections(costs_matrix: np.ndarray[float]):
     
     # Shuffle the list and select the first 20% of unique connections to discard
     random.shuffle(unique_connections)
-    total_to_discard = int(np.floor(0.2 * np.size(unique_connections)))
+    total_to_discard = int(np.floor(0.2 * np.size(unique_connections, 0)))
     connections_to_discard = unique_connections[:total_to_discard]
 
     # Discard selected connections
