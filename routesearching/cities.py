@@ -38,7 +38,7 @@ def generate_costs_matrix(cities_list: list[City], symmetrical_problem = True):
     return costs_matrix
 
 def dicard_20percent_connections(costs_matrix: np.ndarray[float]):
-    # Generate the lit with unique connections
+    # Generate the list with unique connections
     n = costs_matrix.shape[0]
     unique_connections = [(i, j) for i in range(n) for j in range(i + 1, n)]
     
@@ -53,28 +53,42 @@ def dicard_20percent_connections(costs_matrix: np.ndarray[float]):
         costs_matrix[i, j] = 0.
         costs_matrix[j, i] = 0.
 
-def print_graph(costs_matrix: np.ndarray[float], cities_list: list[City]):
+def print_graph(costs_matrix: np.ndarray[float], cities_list: list[City], symmetrical_problem = True):
     # Create an empty directed graph
-    G = nx.DiGraph()
+    G = nx.Graph() if symmetrical_problem else nx.MultiDiGraph()
 
-    # Add nodes
     for i in range(costs_matrix.shape[0]):
-        G.add_node(i+1)
+        # Add nodes with cities positions
+        G.add_node(i+1, pos=(cities_list[i].x, cities_list[i].y))
         for j in range(costs_matrix.shape[1]):
             if j > i and costs_matrix[i, j] > 0.:
+                # Add edges with costs as weights
                 G.add_edge(i+1, j+1, weight=costs_matrix[i, j])
-                G.add_edge(j+1, i+1, weight=costs_matrix[j, i])
+                if symmetrical_problem == False:
+                    G.add_edge(j+1, i+1, weight=costs_matrix[j, i])
 
-    # Create a dictionary to map node names to (x, y) coordinates using a for loop
-    cities_positions = {}
-    for node, city in zip(G.nodes(), cities_list):
-        cities_positions[node] = (city.x, city.y)
+    # Now you can use the 'pos' attribute to position nodes during visualization
+    node_positions = nx.get_node_attributes(G, 'pos')
 
     # Draw nodes and edges using specified positions
-    nx.draw_networkx_nodes(G, cities_positions, node_size=300, node_color='skyblue')
-    nx.draw_networkx_edges(G, cities_positions, edgelist=G.edges(), edge_color='gray')
-    nx.draw_networkx_labels(G, cities_positions, font_size=10, font_color='black')
+    nx.draw_networkx_nodes(G, node_positions, node_size=300, node_color='skyblue')
+    nx.draw_networkx_edges(G, node_positions, edgelist=G.edges(), edge_color='gray')
+    nx.draw_networkx_labels(G, node_positions, font_size=10, font_color='black')
+    nx.draw_networkx_edge_labels(G, node_positions, edge_labels={(u, v): d["weight"] for u, v, d in G.edges(data=True)}, font_size=7)
+    
+    # X and y axes and it's labels
+    plt.axhline(0, color='black', linewidth=1)
+    plt.axvline(0, color='black', linewidth=1)
+    plt.text(100, -5, 'X', fontsize=12)
+    plt.text(-5, 100, 'Y', fontsize=12)
 
-    # Set axis off and display the graph
-    plt.axis('off')
+    # Add ticks and labels to the axes
+    plt.xticks(np.arange(-100, 100, 10))
+    plt.yticks(np.arange(-100, 100, 10))
+    plt.grid(True)
+
+    # Set axis limits
+    plt.xlim(-100, 100)
+    plt.ylim(-100, 100)
+
     plt.show()
