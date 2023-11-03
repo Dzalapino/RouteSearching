@@ -1,16 +1,10 @@
 import cities
-import numpy
+import bfs
 
-cities_list : list[cities.City] = cities.generate_cities(5)
+city_network = cities.CityNetwork(5, True, False)
 
-print("Cities coordinates:")
-for city in cities_list:
-    print(city.x, city.y, city.z)
+print(city_network)
+city_network.print_graph()
 
-costs_matrix = cities.generate_costs_matrix(cities_list, False)
-print("\nCost matrix without discarding 20% of connections\n", costs_matrix)
-
-# cities.dicard_20percent_connections(costs_matrix)
-# print("\nCost matrix after discarding 20% of connections:\n", costs_matrix)
-
-cities.print_graph(costs_matrix, cities_list)
+shortest_path, total_cost = bfs.shortest_path(city_network.costs_matrix, 0)
+print(f"The shortest path is: {shortest_path}\nThe total cost is: {total_cost}")

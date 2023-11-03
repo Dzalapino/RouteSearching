@@ -8,12 +8,67 @@ class City:
         self.x = random.randint(-100, 100)
         self.y = random.randint(-100, 100)
         self.z = random.randint(0, 50)
+    def __str__(self) -> str:
+        return f"( {self.x}, {self.y}, {self.z} )"
 
-def generate_cities(n: int):
-    cities = []
-    for _ in range(n):
-        cities.append(City())
-    return cities
+class CityNetwork:
+    def __init__(self, n, is_discarded = False, is_symmetrical = True):
+        self.cities = []
+        self.is_discarded = is_discarded
+        self.is_symmetrical = is_symmetrical
+        for _ in range(n):
+            self.cities.append(City())
+        self.costs_matrix = generate_costs_matrix(self.cities, is_symmetrical)
+        if is_discarded:
+            discard_20percent_connections(self.costs_matrix)
+    def __str__(self) -> str:
+        s = "Cities coordinates:"
+        for city in self.cities:
+            s += f"\n{city}"
+        s += "\nCosts matrix"
+        s += " symmetrical" if self.is_symmetrical else " asymmetrical"
+        s += " after discarding 20% of connections:\n" if self.is_discarded else " without discarding 20% of connections:\n"
+        s += str(self.costs_matrix)
+        return s
+    def print_graph(self) -> None:
+        # Create an empty directed graph
+        G = nx.Graph() if self.is_symmetrical else nx.MultiDiGraph()
+
+        for i in range(self.costs_matrix.shape[0]):
+            # Add nodes with cities positions
+            G.add_node(i, pos=(self.cities[i].x, self.cities[i].y))
+            for j in range(self.costs_matrix.shape[1]):
+                if j > i and self.costs_matrix[i, j] > 0.:
+                    # Add edges with costs as weights
+                    G.add_edge(i, j, weight = self.costs_matrix[i, j])
+                    if self.is_symmetrical == False:
+                        G.add_edge(j, i, weight = self.costs_matrix[j, i])
+
+        # Use the 'pos' attribute to position nodes during visualization
+        node_positions = nx.get_node_attributes(G, 'pos')
+
+        # Draw nodes and edges using specified positions
+        nx.draw_networkx_nodes(G, node_positions, node_size=300, node_color='skyblue')
+        nx.draw_networkx_edges(G, node_positions, edgelist=G.edges(), edge_color='gray')
+        nx.draw_networkx_labels(G, node_positions, font_size=10, font_color='black')
+        nx.draw_networkx_edge_labels(G, node_positions, edge_labels={(u, v): d["weight"] for u, v, d in G.edges(data=True)}, font_size=7)
+        
+        # X and y axes and it's labels
+        plt.axhline(0, color='black', linewidth=1)
+        plt.axvline(0, color='black', linewidth=1)
+        plt.text(100, -5, 'X', fontsize=12)
+        plt.text(-5, 100, 'Y', fontsize=12)
+
+        # Add ticks and grid
+        plt.xticks(np.arange(-100, 100, 10))
+        plt.yticks(np.arange(-100, 100, 10))
+        plt.grid(True)
+
+        # Set axis limits
+        plt.xlim(-100, 100)
+        plt.ylim(-100, 100)
+
+        plt.show()
 
 def count_cost(city1: City, city2: City, symmetrical_problem = True):
     height = city2.z - city1.z
@@ -37,7 +92,7 @@ def generate_costs_matrix(cities_list: list[City], symmetrical_problem = True):
             costs_matrix[i, j] = round(count_cost(cities_list[i], cities_list[j], symmetrical_problem), 2)
     return costs_matrix
 
-def dicard_20percent_connections(costs_matrix: np.ndarray[float]):
+def discard_20percent_connections(costs_matrix: np.ndarray[float]):
     # Generate the list with unique connections
     n = costs_matrix.shape[0]
     unique_connections = [(i, j) for i in range(n) for j in range(i + 1, n)]
@@ -53,42 +108,33 @@ def dicard_20percent_connections(costs_matrix: np.ndarray[float]):
         costs_matrix[i, j] = 0.
         costs_matrix[j, i] = 0.
 
-def print_graph(costs_matrix: np.ndarray[float], cities_list: list[City], symmetrical_problem = True):
-    # Create an empty directed graph
-    G = nx.Graph() if symmetrical_problem else nx.MultiDiGraph()
+def is_connection(city1: int, city2: int, costs_matrix: np.ndarray[float]) -> bool:
+    return True if costs_matrix[city1][city2] != 0. else False
 
-    for i in range(costs_matrix.shape[0]):
-        # Add nodes with cities positions
-        G.add_node(i+1, pos=(cities_list[i].x, cities_list[i].y))
-        for j in range(costs_matrix.shape[1]):
-            if j > i and costs_matrix[i, j] > 0.:
-                # Add edges with costs as weights
-                G.add_edge(i+1, j+1, weight=costs_matrix[i, j])
-                if symmetrical_problem == False:
-                    G.add_edge(j+1, i+1, weight=costs_matrix[j, i])
+def includes_all_cities(path: str, n_cities: int) -> bool:
+    # Create a set of expected cities from 1 to n
+    expected_cities = set(range(n_cities))
 
-    # Now you can use the 'pos' attribute to position nodes during visualization
-    node_positions = nx.get_node_attributes(G, 'pos')
+    # Convert the path to a set of cities
+    cities = set(path)
 
-    # Draw nodes and edges using specified positions
-    nx.draw_networkx_nodes(G, node_positions, node_size=300, node_color='skyblue')
-    nx.draw_networkx_edges(G, node_positions, edgelist=G.edges(), edge_color='gray')
-    nx.draw_networkx_labels(G, node_positions, font_size=10, font_color='black')
-    nx.draw_networkx_edge_labels(G, node_positions, edge_labels={(u, v): d["weight"] for u, v, d in G.edges(data=True)}, font_size=7)
-    
-    # X and y axes and it's labels
-    plt.axhline(0, color='black', linewidth=1)
-    plt.axvline(0, color='black', linewidth=1)
-    plt.text(100, -5, 'X', fontsize=12)
-    plt.text(-5, 100, 'Y', fontsize=12)
+    # Check if the expected_cities set is a subset of cities set
+    return expected_cities.issubset(cities)
 
-    # Add ticks and labels to the axes
-    plt.xticks(np.arange(-100, 100, 10))
-    plt.yticks(np.arange(-100, 100, 10))
-    plt.grid(True)
+def get_unvisited(path: list[int], n_cities: int) -> set[int]:
+    # Create a set of expected cities from 1 to n
+    expected_cities = set(range(n_cities))
 
-    # Set axis limits
-    plt.xlim(-100, 100)
-    plt.ylim(-100, 100)
+    # Convert the path to a set of cities
+    cities = set(path)
 
-    plt.show()
+    # Return a subset of expected cities without already visited cities from path
+    return expected_cities.difference(cities)
+
+def get_total_cost(path: list[int], costs_matrix: np.ndarray[float]) -> float:
+    total_cost = 0.
+
+    for i in range(np.size(path) - 1):
+        total_cost += costs_matrix[path[i]][path[i+1]]
+
+    return total_cost
