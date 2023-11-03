@@ -12,12 +12,17 @@ class City:
         return f"( {self.x}, {self.y}, {self.z} )"
 
 class CityNetwork:
-    def __init__(self, n, is_discarded = False, is_symmetrical = True):
+    def __init__(self, n, is_discarded = False, is_symmetrical = True, from_file = False):
         self.cities = []
         self.is_discarded = is_discarded
         self.is_symmetrical = is_symmetrical
-        for _ in range(n):
-            self.cities.append(City())
+        if from_file:
+            # Import cities list from file
+            print()
+        else:
+            # Generate n random cities
+            for _ in range(n):
+                self.cities.append(City())
         self.costs_matrix = generate_costs_matrix(self.cities, is_symmetrical)
         if is_discarded:
             discard_20percent_connections(self.costs_matrix)
@@ -88,6 +93,7 @@ def generate_costs_matrix(cities_list: list[City], symmetrical_problem = True):
     # Populate the zeros matrix with the travel costs
     for i in range(n):
         for j in range(n):
+            # Omit diagonal
             if i == j:
                 continue
             costs_matrix[i, j] = round(count_cost(cities_list[i], cities_list[j], symmetrical_problem), 2)
@@ -135,6 +141,7 @@ def get_unvisited(path: list[int], n_cities: int) -> set[int]:
 def get_total_cost(path: list[int], costs_matrix: np.ndarray[float]) -> float:
     total_cost = 0.
 
+    # Loop through cities in path and increment cost of every single travel
     for i in range(np.size(path) - 1):
         total_cost += costs_matrix[path[i]][path[i+1]]
 

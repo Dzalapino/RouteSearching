@@ -1,8 +1,12 @@
 import numpy as np
 import cities
 from sys import float_info
+import time
+from memory_profiler import profile
 
+@profile
 def shortest_path(costs_matrix: np.ndarray[float], starting_city: int):
+    start_time = time.time()
     # Create a queue (list) with the chosen starting city
     partial_paths = [[starting_city]]
     n_cities = np.size(costs_matrix, 0)
@@ -32,5 +36,5 @@ def shortest_path(costs_matrix: np.ndarray[float], starting_city: int):
                 new_path = list(path)
                 new_path.append(city)
                 partial_paths.append(new_path)
-    
-    return total_path, total_cost
+    end_time = time.time()
+    return total_path, total_cost, end_time-start_time
