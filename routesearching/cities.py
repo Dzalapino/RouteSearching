@@ -32,17 +32,18 @@ class CityNetwork:
         return s
     def print_graph(self) -> None:
         # Create an empty directed graph
-        G = nx.Graph() if self.is_symmetrical else nx.MultiDiGraph()
+        G = nx.Graph()
 
         for i in range(self.costs_matrix.shape[0]):
             # Add nodes with cities positions
             G.add_node(i, pos=(self.cities[i].x, self.cities[i].y))
             for j in range(self.costs_matrix.shape[1]):
                 if j > i and self.costs_matrix[i, j] > 0.:
-                    # Add edges with costs as weights
-                    G.add_edge(i, j, weight = self.costs_matrix[i, j])
-                    if self.is_symmetrical == False:
-                        G.add_edge(j, i, weight = self.costs_matrix[j, i])
+                    if self.is_symmetrical:
+                        # Add edges with costs as weights
+                        G.add_edge(i, j, weight = self.costs_matrix[i, j])
+                    else:
+                        G.add_edge(j, i, weight = f"{self.costs_matrix[j, i]}\n{self.costs_matrix[i, j]}")
 
         # Use the 'pos' attribute to position nodes during visualization
         node_positions = nx.get_node_attributes(G, 'pos')
@@ -73,7 +74,7 @@ class CityNetwork:
 def count_cost(city1: City, city2: City, symmetrical_problem = True):
     height = city2.z - city1.z
     if symmetrical_problem == False:
-        if height < 0:
+        if height > 0:
             height*=11/10
         else:
             height*=9/10
