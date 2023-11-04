@@ -1,12 +1,10 @@
 import cities
-import bfs
+import full_search
 
-city_network = cities.CityNetwork(10, True, False)
+city_network = cities.CityNetwork(7, True, False)
 
 print(city_network)
-city_network.print_graph()
+# city_network.print_graph()
 
-print("\n\nBFS:")
-shortest_path, total_cost, execution_time = bfs.shortest_path(city_network.costs_matrix, 0)
-print("Execution time:", execution_time)
-print(f"The shortest path is: {shortest_path}\nThe total cost is: {total_cost}")
+full_search.shortest_path(city_network.costs_matrix, 0, full_search.BFS)
+full_search.shortest_path(city_network.costs_matrix, 0, full_search.DFS)
