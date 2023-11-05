@@ -39,9 +39,9 @@ class CityNetwork:
     
     def get_n_cities(self) -> int: return len(self.cities)
 
-    def is_connection(self, city1: int, city2: int) -> bool: return True if self.costs_matrix[city1][city2] != 0. else False
+    def is_connection(self, city1: int, city2: int) -> bool: return True if self.costs_matrix[city1, city2] != 0. else False
 
-    def get_single_cost(self, city1: int, city2: int) -> float: return self.costs_matrix[city1][city2]
+    def get_single_cost(self, city1: int, city2: int) -> float: return self.costs_matrix[city1, city2]
 
     def get_path_cost(self, path: list[int]) -> float:
         total_cost = 0.
