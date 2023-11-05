@@ -113,7 +113,7 @@ class CityNetwork:
 
         plt.show()
 
-def generate_cost(city1: City, city2: City, symmetrical_problem = True):
+def generate_single_cost(city1: City, city2: City, symmetrical_problem = True):
     height = city2.z - city1.z
     if symmetrical_problem == False:
         if height > 0:
@@ -133,7 +133,7 @@ def generate_costs_matrix(cities_list: list[City], symmetrical_problem = True):
             # Omit diagonal
             if i == j:
                 continue
-            costs_matrix[i, j] = round(generate_cost(cities_list[i], cities_list[j], symmetrical_problem), 2)
+            costs_matrix[i, j] = round(generate_single_cost(cities_list[i], cities_list[j], symmetrical_problem), 2)
     return costs_matrix
 
 def discard_20percent_connections(costs_matrix: np.ndarray[float]):

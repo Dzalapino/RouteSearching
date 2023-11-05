@@ -50,8 +50,8 @@ def shortest_path(city_network: cities.CityNetwork, print_steps = False):
     path.append(starting_city)
     print(f"\n\nNearest Neighbor:\nThe shortest path is: {path}\nThe total cost is: {city_network.get_path_cost(path)}")
 
-    def choose_another_starting_city(starting_city: int, path: deque[int]) -> int:
-        path.clear()
-        starting_city += 1
-        path.append(starting_city)
-        return starting_city
+def choose_another_starting_city(starting_city: int, path: deque[int]) -> int:
+    path.clear()
+    starting_city += 1
+    path.append(starting_city)
+    return starting_city
