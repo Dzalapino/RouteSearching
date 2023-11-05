@@ -13,7 +13,6 @@ def shortest_path(city_network: cities.CityNetwork, method = BFS, starting_city 
     partial_paths: deque[deque] = deque()
     # Append starting city
     partial_paths.append(deque([starting_city]))
-    # n_cities = city_network.get_n_cities()
 
     # Init values to return
     total_path = []

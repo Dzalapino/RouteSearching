@@ -40,18 +40,22 @@ def shortest_path(city_network: cities.CityNetwork, print_steps = False):
                 # Check if final city is connected with startng city
                 if city_network.is_connection(path[-1], starting_city) == False:
                     # Cannot reach starting city from final city, choose another starting city
-                    starting_city = choose_another_starting_city(starting_city, path)
+                    starting_city = choose_another_starting_city(starting_city, path, city_network.get_n_cities())
+
+                    if print_steps: print("Can't reach starting city from final city... Choosing another starting city: ", starting_city)
         else:
             # No reachable cities were found, choose another starting city
-            starting_city = choose_another_starting_city(starting_city, path)
+            starting_city = choose_another_starting_city(starting_city, path, city_network.get_n_cities())
 
             if print_steps: print("No reachable cities were found... Starting again with starting city: ", starting_city)
     
     path.append(starting_city)
     print(f"\n\nNearest Neighbor:\nThe shortest path is: {path}\nThe total cost is: {city_network.get_path_cost(path)}")
 
-def choose_another_starting_city(starting_city: int, path: deque[int]) -> int:
-    path.clear()
+def choose_another_starting_city(starting_city: int, path: deque[int], n_cities: int) -> int:
     starting_city += 1
+    if starting_city >= n_cities:
+        raise Exception("Cannot find a suitable path from any of the cities with Nearest Neighbor algorithm")
+    path.clear()
     path.append(starting_city)
     return starting_city
