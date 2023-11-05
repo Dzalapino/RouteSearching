@@ -26,6 +26,7 @@ class CityNetwork:
         self.costs_matrix = generate_costs_matrix(self.cities, is_symmetrical)
         if is_discarded:
             discard_20percent_connections(self.costs_matrix)
+
     def __str__(self) -> str:
         s = "Cities coordinates:"
         for city in self.cities:
@@ -35,6 +36,42 @@ class CityNetwork:
         s += " after discarding 20% of connections:\n" if self.is_discarded else " without discarding 20% of connections:\n"
         s += str(self.costs_matrix)
         return s
+    
+    def get_n_cities(self) -> int: return len(self.cities)
+
+    def is_connection(self, city1: int, city2: int) -> bool: return True if self.costs_matrix[city1][city2] != 0. else False
+
+    def get_single_cost(self, city1: int, city2: int) -> float: return self.costs_matrix[city1][city2]
+
+    def get_path_cost(self, path: list[int]) -> float:
+        total_cost = 0.
+
+        # Loop through cities in path and increment cost of every single travel
+        for i in range(np.size(path) - 1):
+            total_cost += self.get_single_cost(path[i], path[i+1])
+
+        return total_cost
+
+    def get_unvisited_cities(self, path: list[int]) -> set[int]:
+        # Create a set of expected cities from 1 to n
+        expected_cities = set(range(self.get_n_cities()))
+
+        # Convert the path to a set of cities
+        cities = set(path)
+
+        # Return a subset of expected cities without already visited cities from path
+        return expected_cities.difference(cities)
+
+    def is_path_including_all_cities(self, path: str) -> bool:
+        # Create a set of expected cities from 1 to n
+        expected_cities = set(range(self.get_n_cities()))
+
+        # Convert the path to a set of cities
+        cities = set(path)
+
+        # Check if the expected_cities set is a subset of cities set
+        return expected_cities.issubset(cities)
+    
     def print_graph(self) -> None:
         # Create an empty directed graph
         G = nx.Graph()
@@ -76,7 +113,7 @@ class CityNetwork:
 
         plt.show()
 
-def count_cost(city1: City, city2: City, symmetrical_problem = True):
+def generate_cost(city1: City, city2: City, symmetrical_problem = True):
     height = city2.z - city1.z
     if symmetrical_problem == False:
         if height > 0:
@@ -96,7 +133,7 @@ def generate_costs_matrix(cities_list: list[City], symmetrical_problem = True):
             # Omit diagonal
             if i == j:
                 continue
-            costs_matrix[i, j] = round(count_cost(cities_list[i], cities_list[j], symmetrical_problem), 2)
+            costs_matrix[i, j] = round(generate_cost(cities_list[i], cities_list[j], symmetrical_problem), 2)
     return costs_matrix
 
 def discard_20percent_connections(costs_matrix: np.ndarray[float]):
@@ -114,35 +151,3 @@ def discard_20percent_connections(costs_matrix: np.ndarray[float]):
         i, j = connection
         costs_matrix[i, j] = 0.
         costs_matrix[j, i] = 0.
-
-def is_connection(city1: int, city2: int, costs_matrix: np.ndarray[float]) -> bool:
-    return True if costs_matrix[city1][city2] != 0. else False
-
-def includes_all_cities(path: str, n_cities: int) -> bool:
-    # Create a set of expected cities from 1 to n
-    expected_cities = set(range(n_cities))
-
-    # Convert the path to a set of cities
-    cities = set(path)
-
-    # Check if the expected_cities set is a subset of cities set
-    return expected_cities.issubset(cities)
-
-def get_unvisited(path: list[int], n_cities: int) -> set[int]:
-    # Create a set of expected cities from 1 to n
-    expected_cities = set(range(n_cities))
-
-    # Convert the path to a set of cities
-    cities = set(path)
-
-    # Return a subset of expected cities without already visited cities from path
-    return expected_cities.difference(cities)
-
-def get_total_cost(path: list[int], costs_matrix: np.ndarray[float]) -> float:
-    total_cost = 0.
-
-    # Loop through cities in path and increment cost of every single travel
-    for i in range(np.size(path) - 1):
-        total_cost += costs_matrix[path[i]][path[i+1]]
-
-    return total_cost
