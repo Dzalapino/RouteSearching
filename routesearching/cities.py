@@ -53,7 +53,7 @@ class CityNetwork:
         return total_cost
 
     def get_unvisited_cities(self, path: list[int]) -> set[int]:
-        # Create a set of expected cities from 1 to n
+        # Create a set of expected cities from 0 to n
         expected_cities = set(range(self.get_n_cities()))
 
         # Convert the path to a set of cities
@@ -61,9 +61,19 @@ class CityNetwork:
 
         # Return a subset of expected cities without already visited cities from path
         return expected_cities.difference(cities)
+    
+    def get_neighbors(self, city: int) -> set[int]:
+        return set(n for n in range(self.get_n_cities()) if n != city and self.is_connection(city, n))
+    
+    def get_unvisited_neighbors(self, path: list[int]):
+        # Get the neighbors of last city in path
+        neighbors = self.get_neighbors(path[-1])
+
+        # Return the intersection of unvisited cities in path and the neighbors of last city
+        return set.intersection(neighbors, self.get_unvisited_cities(path))
 
     def is_path_including_all_cities(self, path: str) -> bool:
-        # Create a set of expected cities from 1 to n
+        # Create a set of expected cities from 0 to n
         expected_cities = set(range(self.get_n_cities()))
 
         # Convert the path to a set of cities

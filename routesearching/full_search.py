@@ -18,6 +18,7 @@ def shortest_path(city_network: cities.CityNetwork, method = BFS, starting_city 
     total_path = []
     total_cost = float_info.max
 
+    print(f"\n\n{method}:")
     while(len(partial_paths) > 0):
         if print_steps: print("\nEntering new iteration... The partial paths collection:\n", partial_paths)
 
@@ -43,13 +44,10 @@ def shortest_path(city_network: cities.CityNetwork, method = BFS, starting_city 
                     total_path = path
                     total_cost = cost
         
-        # Add new paths with remaining unvisited cities in the current path to the queue
-        for city in city_network.get_unvisited_cities(path):
-            # Omit the non existing connections
-            if city_network.is_connection(path[-1], city):
-                new_path = deque(path)
-                new_path.append(city)
-                partial_paths.append(new_path)
+        # Add new paths with remaining unvisited cities (for the current path) to the queue
+        for city in city_network.get_unvisited_neighbors(path):
+            new_path = deque(path)
+            new_path.append(city)
+            partial_paths.append(new_path)
 
-    print(f"\n\n{method}:")
     print(f"The shortest path is: {total_path}\nThe total cost is: {total_cost}")

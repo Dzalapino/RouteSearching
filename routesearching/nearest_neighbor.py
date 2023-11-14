@@ -10,6 +10,7 @@ def shortest_path(city_network: cities.CityNetwork, print_steps = False):
     starting_city = 0
     path = deque([starting_city])
 
+    print("\n\nNearest Neighbor:")
     while len(path) < city_network.get_n_cities():
         if print_steps: print("\nEntering new iteration... Current path:\n", path)
 
@@ -17,17 +18,15 @@ def shortest_path(city_network: cities.CityNetwork, print_steps = False):
         smallest_cost = float_info.max
 
         if print_steps: print("Printing neighbors:")
-        # Get the unvisited cities in path
-        for city in city_network.get_unvisited_cities(path):
-            # Omit the non existing connections
-            if city_network.is_connection(path[-1], city):
-                if print_steps: print(city)
+        # Get the unvisited neighbors in path
+        for city in city_network.get_unvisited_neighbors(path):
+            if print_steps: print(city)
 
-                # Check for the nearest neighbor
-                cost = city_network.get_single_cost(path[-1], city)
-                if cost < smallest_cost:
-                    nearest_city = city
-                    smallest_cost = cost
+            # Check for the nearest neighbor
+            cost = city_network.get_single_cost(path[-1], city)
+            if cost < smallest_cost:
+                nearest_city = city
+                smallest_cost = cost
         
         if nearest_city is not None:
             if print_steps: print("Nearest neighbor is: ", nearest_city)
@@ -50,7 +49,7 @@ def shortest_path(city_network: cities.CityNetwork, print_steps = False):
             if print_steps: print("No reachable cities were found... Starting again with starting city: ", starting_city)
     
     path.append(starting_city)
-    print(f"\n\nNearest Neighbor:\nThe shortest path is: {path}\nThe total cost is: {city_network.get_path_cost(path)}")
+    print(f"The shortest path is: {path}\nThe total cost is: {city_network.get_path_cost(path)}")
 
 def choose_another_starting_city(starting_city: int, path: deque[int], n_cities: int) -> int:
     starting_city += 1
