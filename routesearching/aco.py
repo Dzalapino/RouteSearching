@@ -1,4 +1,5 @@
 from sys import float_info
+from collections import deque
 import numpy as np
 import random
 import cities
@@ -11,7 +12,7 @@ def shortest_path(city_network: cities.CityNetwork, max_path_cost: float, starti
     n_cities = city_network.get_n_cities()
     pheromone_matrix = np.full((n_cities, n_cities), init_pheromone)
     np.fill_diagonal(pheromone_matrix, 0)
-    best_path = []
+    best_path = deque()
     smallest_cost = float_info.max
 
     print("\n\nAnt Colony Approximation:")
@@ -21,19 +22,19 @@ def shortest_path(city_network: cities.CityNetwork, max_path_cost: float, starti
             print(f"Current best path found by colony and it's cost: {best_path}, {smallest_cost}")
 
         # Chosing paths for predefined number of ants based on the pheromone matrix
-        ants_paths = [] # Init empty list of ants paths
+        ants_paths = deque(deque()) # Init empty list of ants paths
         
         if print_steps: print(f"Searching paths for {n_ants} ants...")
 
         # Find paths for every ant based on probability
         while len(ants_paths) < n_ants:
-            ant_path = [starting_city] # Init the path of an ant with the starting city in it
+            ant_path = deque([starting_city]) # Init the path of an ant with the starting city in it
 
             if print_steps: print(f"\nFound paths so far: {ants_paths}")
 
             # Find the new path for an ant
             for _ in range(n_cities-1):
-                probabilities = []
+                probabilities = deque()
                 sum_partial_probs = .0
                 neighbors = city_network.get_unvisited_neighbors(ant_path)
                 
@@ -99,15 +100,15 @@ def shortest_path(city_network: cities.CityNetwork, max_path_cost: float, starti
         
     print_shortest_path(best_path, smallest_cost)
 
-def chose_next_city_probabilistic(probabilities: list[tuple[int, float]]):
+def chose_next_city_probabilistic(probabilities: deque[tuple[int, float]]):
     # Sort probabilistic values descending
-    sorted_probabilities_desc = sorted(probabilities, key=lambda x: x[1], reverse=True)
+    sorted_probabilities_desc = deque(sorted(probabilities, key=lambda x: x[1], reverse=True))
 
     # Turn probabilistic values to cumulative ones
-    cumulative_desc = []
+    cumulative_desc = deque()
     for _ in range(len(sorted_probabilities_desc)):
         cumulative_desc.append((sorted_probabilities_desc[0][0], sum(item[1] for item in sorted_probabilities_desc)))
-        sorted_probabilities_desc.pop(0)
+        sorted_probabilities_desc.popleft()
 
     # Generate random number <0, 1> and return the city that random belongs to
     random_n = random.random()
