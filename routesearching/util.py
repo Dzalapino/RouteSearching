@@ -29,3 +29,6 @@ def measure_memory(func):
         print(f"Execution time: {end_time - start_time} seconds")
         return result
     return wrapper
+
+def print_shortest_path(total_path: list, total_cost: float) -> None:
+    print(f"The shortest path is: {total_path}\nThe total cost is: {total_cost}")

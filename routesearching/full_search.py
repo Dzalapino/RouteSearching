@@ -1,7 +1,7 @@
 from collections import deque
 from sys import float_info
 import cities
-from util import measure_time, measure_memory
+from util import measure_time, measure_memory, print_shortest_path
 
 BFS = 'BFS'
 DFS = 'DFS'
@@ -50,4 +50,5 @@ def shortest_path(city_network: cities.CityNetwork, method = BFS, starting_city 
             new_path.append(city)
             partial_paths.append(new_path)
 
-    print(f"The shortest path is: {total_path}\nThe total cost is: {total_cost}")
+    print_shortest_path(total_path, total_cost)
+    return total_path, total_cost

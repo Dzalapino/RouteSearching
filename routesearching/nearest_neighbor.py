@@ -1,7 +1,7 @@
 from collections import deque
 from sys import float_info
 import cities
-from util import measure_memory, measure_time
+from util import measure_memory, measure_time, print_shortest_path
 
 @measure_memory
 @measure_time
@@ -49,7 +49,9 @@ def shortest_path(city_network: cities.CityNetwork, print_steps = False):
             if print_steps: print("No reachable cities were found... Starting again with starting city: ", starting_city)
     
     path.append(starting_city)
-    print(f"The shortest path is: {path}\nThe total cost is: {city_network.get_path_cost(path)}")
+    total_cost = city_network.get_path_cost(path)
+    print_shortest_path(path, total_cost)
+    return path, total_cost
 
 def choose_another_starting_city(starting_city: int, path: deque[int], n_cities: int) -> int:
     starting_city += 1
