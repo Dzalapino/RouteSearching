@@ -3,9 +3,10 @@ from sys import float_info
 import cities
 from util import measure_memory, measure_time, print_shortest_path
 
+
 @measure_memory
 @measure_time
-def shortest_path(city_network: cities.CityNetwork, print_steps = False):
+def shortest_path(city_network: cities.CityNetwork, print_steps=False):
     # Init path list and starting city
     starting_city = 0
     path = deque([starting_city])
@@ -37,7 +38,7 @@ def shortest_path(city_network: cities.CityNetwork, print_steps = False):
             # Check if that's final iteration
             if len(path) == city_network.get_n_cities():
                 # Check if final city is connected with startng city
-                if city_network.is_connection(path[-1], starting_city) == False:
+                if not city_network.is_connection(path[-1], starting_city):
                     # Cannot reach starting city from final city, choose another starting city
                     starting_city = choose_another_starting_city(starting_city, path, city_network.get_n_cities())
 
@@ -52,6 +53,7 @@ def shortest_path(city_network: cities.CityNetwork, print_steps = False):
     total_cost = city_network.get_path_cost(path)
     print_shortest_path(path, total_cost)
     return path, total_cost
+
 
 def choose_another_starting_city(starting_city: int, path: deque[int], n_cities: int) -> int:
     starting_city += 1

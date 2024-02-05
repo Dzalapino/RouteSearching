@@ -100,6 +100,7 @@ def shortest_path(city_network: cities.CityNetwork, max_path_cost: float, starti
         
     print_shortest_path(best_path, smallest_cost)
 
+
 def chose_next_city_probabilistic(probabilities: deque[tuple[int, float]]):
     # Sort probabilistic values descending
     sorted_probabilities_desc = deque(sorted(probabilities, key=lambda x: x[1], reverse=True))
@@ -113,7 +114,7 @@ def chose_next_city_probabilistic(probabilities: deque[tuple[int, float]]):
     # Generate random number <0, 1> and return the city that random belongs to
     random_n = random.random()
     for i in range(len(cumulative_desc) - 1):
-        if random_n <= cumulative_desc[i][1] and random_n > cumulative_desc[i+1][1]:
+        if cumulative_desc[i][1] >= random_n > cumulative_desc[i + 1][1]:
             return cumulative_desc[i][0]
         
     return cumulative_desc[-1][0]

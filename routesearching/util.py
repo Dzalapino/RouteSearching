@@ -1,6 +1,7 @@
 import time
 import tracemalloc
 
+
 # decorator for time consumption measurements
 def measure_time(func):
     def wrapper(*args, **kwargs):
@@ -15,7 +16,8 @@ def measure_time(func):
         return result
     return wrapper
 
-# decorator for time consumption measurements
+
+# decorator for memory consumption measurements
 def measure_memory(func):
     def wrapper(*args, **kwargs):
         # trace time before function call
@@ -29,6 +31,7 @@ def measure_memory(func):
         print(f"Execution time: {end_time - start_time} seconds")
         return result
     return wrapper
+
 
 def print_shortest_path(total_path: list, total_cost: float) -> None:
     print(f"The shortest path is: {total_path}\nThe total cost is: {total_cost}")

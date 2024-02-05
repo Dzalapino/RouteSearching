@@ -6,6 +6,7 @@ from util import measure_time, measure_memory, print_shortest_path
 BFS = 'BFS'
 DFS = 'DFS'
 
+
 @measure_memory
 @measure_time
 def shortest_path(city_network: cities.CityNetwork, method = BFS, starting_city = 0, print_steps = False):

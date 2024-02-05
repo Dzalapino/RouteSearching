@@ -1,10 +1,18 @@
 from sys import float_info
 import cities
 from util import measure_memory, measure_time
+from enum import Enum
+
+
+class HeuristicType(Enum):
+    DIJKSTRA = 0
+    ADMISSIBLE = 1
+    INADMISSIBLE = 2
+
 
 @measure_memory
 @measure_time
-def shortest_path(city_network: cities.CityNetwork, starting_city = 0, print_steps = False):
+def shortest_path(city_network: cities.CityNetwork, starting_city=0, heuristic=HeuristicType.DIJKSTRA, print_steps=False):
     # Init the list of tuples(shortest path, previous city) with highest floats and infinities beside starting city
     shortest_paths = [[float_info.max, None] if city != starting_city else [0., None] for city in range(city_network.get_n_cities())]
     # Init the visited cities set
@@ -12,7 +20,7 @@ def shortest_path(city_network: cities.CityNetwork, starting_city = 0, print_ste
 
     print("\n\nDijkstra:")
     while len(visited_cities) < city_network.get_n_cities():
-        if print_steps: 
+        if print_steps:
             print("\nEntering new iteration... Visited cities so far:\n", visited_cities)
             print_shortest_paths(shortest_paths)
 
@@ -35,9 +43,14 @@ def shortest_path(city_network: cities.CityNetwork, starting_city = 0, print_ste
         update_neighbor = -1
         # Iterate through neighbors
         for neighbor in unvisited_neighbors:
-            # Get the total cost of the shortest path untill now and the cost of going from current city to neighbor combined
+            # Get the total cost of the shortest path until now and the cost of going from current city to neighbor combined
             cost_to_neighbor = city_network.get_single_cost(current_city_with_cost[0], neighbor)
-            cost_combined = cost_to_neighbor + current_city_with_cost[1]
+            if heuristic is heuristic.ADMISSIBLE:
+                cost_combined = cost_to_neighbor
+            elif heuristic is heuristic.INADMISSIBLE:
+                pass
+            else:
+                cost_combined = cost_to_neighbor + current_city_with_cost[1]
 
             if print_steps: print(f"Cost of going from {current_city_with_cost[0]} to {neighbor}: {cost_to_neighbor}")
 
@@ -51,12 +64,13 @@ def shortest_path(city_network: cities.CityNetwork, starting_city = 0, print_ste
         if update_neighbor != -1:
             shortest_paths[update_neighbor][0] = new_cost
             shortest_paths[update_neighbor][1] = current_city_with_cost[0]
-        
+
         # Add the current city to the visited set
         visited_cities.add(current_city_with_cost[0])
     
     # Print results
     print_shortest_paths(shortest_paths)
+
 
 def print_shortest_paths(shortest_paths: list[list[float, int]]):
     i = 0
