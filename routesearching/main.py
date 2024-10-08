@@ -2,7 +2,6 @@ import cities
 import full_search
 import nearest_neighbor
 import dijkstra
-import a_star
 import aco
 import numpy as np
 
@@ -11,7 +10,7 @@ np.random.seed(0)
 city_network = cities.CityNetwork(7, True, False)
 
 print(city_network)
-# city_network.print_graph()
+city_network.print_graph()
 
 full_search.shortest_path(city_network, full_search.BFS)
 full_search.shortest_path(city_network, full_search.DFS)
@@ -23,5 +22,3 @@ except Exception as e:
     print(f"\n{e}")
 
 dijkstra.shortest_path(city_network, 0, dijkstra.HeuristicType.DIJKSTRA)
-# a_star.tsp_a_star(city_network, 0, 'ADMISSIBLE')
-# a_star.tsp_a_star(city_network, 0, 'INADMISSIBLE')

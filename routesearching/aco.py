@@ -7,7 +7,8 @@ from util import measure_memory, measure_time, print_shortest_path
 
 @measure_memory
 @measure_time
-def shortest_path(city_network: cities.CityNetwork, max_path_cost: float, starting_city = 0, n_ants = 10, init_pheromone = 0.1, evaporation_rate = 0.25, print_steps = False):
+def shortest_path(city_network: cities.CityNetwork, max_path_cost: float, starting_city=0, n_ants=10,
+                  init_pheromone=0.1, evaporation_rate=0.25, print_steps=False):
     # Generate pheromones matrix
     n_cities = city_network.get_n_cities()
     pheromone_matrix = np.full((n_cities, n_cities), init_pheromone)

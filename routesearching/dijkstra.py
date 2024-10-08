@@ -46,7 +46,7 @@ def shortest_path(city_network: cities.CityNetwork, starting_city=0, heuristic=H
             # Get the total cost of the shortest path until now and the cost of going from current city to neighbor combined
             cost_to_neighbor = city_network.get_single_cost(current_city_with_cost[0], neighbor)
             if heuristic is heuristic.ADMISSIBLE:
-                cost_combined = cost_to_neighbor
+                pass
             elif heuristic is heuristic.INADMISSIBLE:
                 pass
             else:
